@@ -3,8 +3,10 @@ from django.shortcuts import render
 from openai import OpenAI, AssistantEventHandler
 from typing_extensions import override
 
+from chatproject import settings
+
 # Initialize OpenAI client (set up your API key securely!)
-client = OpenAI(api_key="sk-...")
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 def assistant_stream_template(request):
     return render(request, "chatapp/assistant_stream.html")
@@ -47,7 +49,7 @@ class DjangoEventHandler(AssistantEventHandler):
 def assistant_stream_view(request):
     prompt = request.GET.get("prompt", "What's the weather?")
     thread = client.beta.threads.create()
-    assistant = client.beta.assistants.retrieve("YOUR_ASSISTANT_ID")
+    assistant = client.beta.assistants.retrieve(settings.OPENAI_ASSISTANT_ID)
 
     def event_stream():
         # In a real app, use a thread-safe queue for handler <-> generator
