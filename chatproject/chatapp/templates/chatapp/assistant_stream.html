@@ -1,0 +1,41 @@
+<!-- templates/your_app/assistant_stream.html -->
+{#{% extends 'base.html' %}#}
+
+{% block content %}
+<h2>Assistant Streaming Demo</h2>
+<form id="prompt-form">
+  <input type="text" id="prompt-input" placeholder="Ask something..." style="width:300px;" />
+  <button type="submit">Send</button>
+</form>
+<div id="streamed-response" style="border:1px solid #ddd; margin-top:16px; padding:12px; min-height:32px;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('prompt-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const prompt = document.getElementById('prompt-input').value;
+    const display = document.getElementById('streamed-response');
+    display.innerHTML = ""; // Clear previous
+
+    // Close previous EventSource if any
+    if(window.currentSource){
+        window.currentSource.close();
+    }
+
+    // Start new SSE stream
+    const url = `/your-stream-url/?prompt=` + encodeURIComponent(prompt);
+    const source = new EventSource(url);
+
+    window.currentSource = source;
+
+    source.onmessage = function(event) {
+        display.innerHTML += event.data; // Append streamed data
+    };
+    source.onerror = function(err) {
+        source.close();
+        display.innerHTML += "<br><em>Stream ended or error occurred.</em>";
+    }
+});
+</script>
+{% endblock %}
