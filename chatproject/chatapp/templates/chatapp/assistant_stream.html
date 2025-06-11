@@ -24,7 +24,7 @@ document.getElementById('prompt-form').addEventListener('submit', function(e) {
     }
 
     // Start new SSE stream
-    const url = `/your-stream-url/?prompt=` + encodeURIComponent(prompt);
+    const url = `/assistant/stream/?prompt=` + encodeURIComponent(prompt);
     const source = new EventSource(url);
 
     window.currentSource = source;
